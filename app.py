@@ -6,6 +6,7 @@ from time import sleep
 # pygame.init()
 
 pygame.font.init()
+pygame.mixer.init()
 
 win = pygame.display.set_mode((1000, 700))
 title = pygame.image.load("images/title.png")
@@ -15,6 +16,9 @@ small_person = pygame.transform.scale(small_person, (25,60))
 pygame.display.set_caption("Papers Please Remake")
 font = pygame.font.SysFont('Tahoma', 60, True, False)
 #text = font.render('Bauhaus 93 | Size: 36 | Colour: White | Background: Blue', True, (255, 255, 255), (0, 0, 255))
+pygame.mixer.music.load("musics/song.mp3")
+pygame.mixer.music.play(-1)
+
 
 run = True
 
@@ -46,8 +50,6 @@ class Button:
                 return True
         return False
 
-class Person:
-    pass
 
 play_button = Button(450, 600, 130, 50, (255, 255, 255))
 while run:
@@ -58,6 +60,7 @@ while run:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if play_button.is_click(pos):
+                pygame.mixer.music.stop()
                 run = False
 
     win.blit(title, (0,0))
