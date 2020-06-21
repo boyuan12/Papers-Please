@@ -7,8 +7,11 @@ from helpers import passport_img
 
 # pygame.init()
 
+COUNTRIES = ["antegria", "arstotzka", "obristan", "impor", "kolechia", "republia", "united-federation"]
+
 pygame.font.init()
 pygame.mixer.init()
+people_count = 0
 
 win = pygame.display.set_mode((1000, 700))
 title = pygame.image.load("images/title.png")
@@ -21,6 +24,7 @@ small_person = pygame.transform.scale(small_person, (25,60))
 pygame.display.set_caption("Papers Please Remake")
 font = pygame.font.SysFont('Tahoma', 60, True, False)
 font_a = pygame.font.Font("fonts/a.ttf", 10)
+game_map = pygame.image.load("images/map.jpeg")
 #text = font.render('Bauhaus 93 | Size: 36 | Colour: White | Background: Blue', True, (255, 255, 255), (0, 0, 255))
 pygame.mixer.music.load("musics/song.mp3")
 pygame.mixer.music.play(-1)
@@ -94,6 +98,7 @@ iterator = 0
 pass_button = Button(900, 450, 50, 50, (0, 255, 0))
 denied_button = Button(900, 500, 50, 50, (255, 0, 0))
 
+correct = None
 
 while play:
     for event in pygame.event.get():
@@ -104,13 +109,20 @@ while play:
             print(colored(pygame.mouse.get_pos(), "red"))
             avail = False
             iterator = 0
+            people_count += 1
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pass_button.is_click(pos):
                 # do once approve button is clicked
+                if correct != True:
+                    print("you failed")
                 avail = True
+                iterator = 0
             elif denied_button.is_click(pos):
                 # do once denied button is clicked
+                if correct != False:
+                    print("you failed")
                 avail = True
+                iterator = 0
 
     win.blit(workspace, (0,0))
     # win.blit(small_person, (0, 30))
@@ -128,21 +140,55 @@ while play:
         win.blit(small_person, (0 + i*20 + int(random_num(1, 2, 1)) / 2, 140 + int(random_num(1, 2, 1)) / 2))
 
     if not avail:
-        text = font.render("NEXT!", 1, (100, 100, 100))
-        win.blit(text, (450, 600))
-        if iterator == 0:
-            passport_img()
-            global passport
-            passport = pygame.image.load("output.png")
-        merged = passport.copy()
-        merged.blit(a, (15, 190))
-        win.blit(merged, (400, 250))
-        win.blit(a, (250, 250))
-        iterator += 1
-        pygame.display.update()
+
+        if day_count == 1:
+
+            if people_count == 4 or people_count > 5:
+                if iterator == 0:
+                    country = random.choice(COUNTRIES)
+                    if country != "arstotzka":
+                        correct = False
+                    else:
+                        correct = True
+                    passport_img(country)
+                    passport = pygame.image.load("output.png")
+
+            if people_count == 1:
+                if iterator == 0:
+                    correct = True
+                    passport_img("arstotzka")
+                    passport = pygame.image.load("output.png")
+
+            if people_count == 2:
+                if iterator == 0:
+                    correct = False
+                    passport_img("impor")
+                    passport = pygame.image.load("output.png")
+
+            if people_count == 3:
+                if iterator == 0:
+                    correct = False
+                    passport_img("republia")
+                    passport = pygame.image.load("output.png")
+
+            if people_count == 5:
+                if iterator == 0:
+                    correct = False
+                    text = font_a.render("Open this gate is stupid", 1, (100, 100, 100))
+                    win.blit(text, (250, 250))
+                    #passport_img("kolechia")
+                    #passport = pygame.image.load("output.png")
+            if people_count != 5:
+                merged = passport.copy()
+                merged.blit(a, (15, 190))
+                win.blit(merged, (400, 250))
+                win.blit(a, (250, 250))
+                iterator += 1
+            pygame.display.update()
 
     pass_button.draw("VALID", font_type="font_a")
     denied_button.draw("DENIED", font_type="font_a")
+    # win.blit(game_map, (0, 0))
     pygame.display.update()
 
 pygame.quit()

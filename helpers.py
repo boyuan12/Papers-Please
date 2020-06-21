@@ -7,18 +7,48 @@ from datetime import date
 
 import string
 
-citys = [
-    "Antoinetteston",
-    "Letaville",
-    "Juanaville",
-    "Ebonyston",
-    "Araville",
-    "Callieville",
-    "Chelseaston",
-    "Maryston",
-    "Kodyville",
-    "Maryjaneville",
-]
+citys = {
+    "arstotzka": [
+        "Altan",
+        "Vescillo",
+        "Burnton",
+        "Octovalis",
+        "Gennistora",
+        "Lendiforma",
+        "Wozenfield",
+        "Fardesto"
+    ],
+    "antegria": [
+        "St. Marmero",
+        "Glorian",
+        "Outer Grouse"
+    ],
+    "impor": [
+        "Enkyo",
+        "Haihan",
+        "Tsunkeido"
+    ],
+    "kolechia": [
+        "Yurko City",
+        "Vedor",
+        "West Grestin"
+    ],
+    "obristan": [
+        "Skal",
+        "Lorndaz",
+        "Mergerous"
+    ],
+    "republia": [
+        "True Glorian",
+        "Lesrenadi",
+        "Bostan",
+    ],
+    "united-federation": [
+        "Great Rapid",
+        "Shingleton",
+        "Korista City"
+    ]
+}
 
 def random_num(start, end):
     nums = []
@@ -40,10 +70,10 @@ def random_info():
     name = f'{info["results"][0]["name"]["last"]}, {info["results"][0]["name"]["first"]}'.upper()
     dob = info["results"][0]["dob"]["date"].split("T")[0]
     sex = info["results"][0]["gender"]
-    iss = random.choice(citys)
+    # iss = random.choice(citys)
     exp = f"{random_num(int(date.today().year)-3, int(date.today().year)+7)}-{random_num(1, 12)}-{random_num(1, 28)}"
     # exp = random.choice([i + int(dob.split("-")[0]) for i in range(100)])
-    return name, dob, sex, iss, exp
+    return name, dob, sex, exp
 
 def random_str(digits=10):
     ans = ""
@@ -54,21 +84,20 @@ def random_str(digits=10):
             ans += random.choice(string.ascii_uppercase + string.digits)
     return ans
 
-def passport_img():
-    name, dob, sex, iss, exp = random_info()
+def passport_img(country):
+    name, dob, sex, exp = random_info()
 
-    image = cv2.imread('images/passports/arstotzka.png', cv2.IMREAD_UNCHANGED)
+    image = cv2.imread(f'images/passports/{country}.png', cv2.IMREAD_UNCHANGED)
 
-    position = (10,310)
-
-    cv2.putText(
-        image, #numpy array on which text is written
-        random_str(), #text
-        position, #position at which writing has to start
-        cv2.FONT_HERSHEY_SIMPLEX, #font family
-        0.6, #font size
-        (0, 0, 0, 255), #font color
-        1) #font stroke
+    if country != "cobrastan":
+        cv2.putText(
+            image, #numpy array on which text is written
+            random_str(), #text
+            (10, 310), #position at which writing has to start
+            cv2.FONT_HERSHEY_SIMPLEX, #font family
+            0.6, #font size
+            (0, 0, 0, 255), #font color
+            1) #font stroke
 
     cv2.putText(
         image, #numpy array on which text is written
@@ -90,7 +119,7 @@ def passport_img():
 
     cv2.putText(
         image, #numpy array on which text is written
-        iss, #text
+        random.choice(citys[country]), #text
         (130, 241), #position at which writing has to start
         cv2.FONT_HERSHEY_SIMPLEX, #font family
         0.4, #font size
@@ -126,6 +155,6 @@ def passport_img():
 
     cv2.imwrite('output.png', image)
 
-"""if __name__ == "__main__":
+if __name__ == "__main__":
     data = random_info()
-    main(data[0], data[1], data[2], data[3], data[4])"""
+    passport_img("arstotzka")
