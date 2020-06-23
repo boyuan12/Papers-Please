@@ -13,6 +13,16 @@ pygame.font.init()
 pygame.mixer.init()
 people_count = 0
 
+alphas = "abcdefghijklm"
+characters = []
+for i in range(len("abcdefghijklm")):
+    characters.append(pygame.image.load(f"images/characters/{alphas[i]}.png"))
+characters.append(pygame.image.load(f"images/characters/elisa.png"))
+characters.append(pygame.image.load(f"images/characters/ezic.png"))
+characters.append(pygame.image.load(f"images/characters/jorji.png"))
+
+print(characters)
+
 win = pygame.display.set_mode((1000, 700))
 title = pygame.image.load("images/title.png")
 workspace = pygame.image.load("images/workspace.png")
@@ -99,6 +109,7 @@ pass_button = Button(900, 450, 50, 50, (0, 255, 0))
 denied_button = Button(900, 500, 50, 50, (255, 0, 0))
 
 correct = None
+char = None
 
 while play:
     for event in pygame.event.get():
@@ -106,6 +117,7 @@ while play:
         if event.type == pygame.QUIT:
             play = False
         if event.type == pygame.MOUSEBUTTONDOWN and (pos[0] > 300 and pos[0] < 400) and (pos[1] > 100 and pos[1] < 200) and avail:
+            char = None
             print(colored(pygame.mouse.get_pos(), "red"))
             avail = False
             iterator = 0
@@ -140,6 +152,8 @@ while play:
         win.blit(small_person, (0 + i*20 + int(random_num(1, 2, 1)) / 2, 140 + int(random_num(1, 2, 1)) / 2))
 
     if not avail:
+        if char == None:
+            char = random.choice(characters)
 
         if day_count == 1:
 
@@ -180,9 +194,9 @@ while play:
                     #passport = pygame.image.load("output.png")
             if people_count != 5:
                 merged = passport.copy()
-                merged.blit(a, (15, 190))
+                merged.blit(char, (15, 190))
                 win.blit(merged, (400, 250))
-                win.blit(a, (250, 250))
+                win.blit(char, (250, 250))
                 iterator += 1
             pygame.display.update()
 

@@ -84,7 +84,8 @@ def random_str(digits=10):
             ans += random.choice(string.ascii_uppercase + string.digits)
     return ans
 
-def passport_img(country):
+def passport_img(country, sex=""):
+
     name, dob, sex, exp = random_info()
 
     image = cv2.imread(f'images/passports/{country}.png', cv2.IMREAD_UNCHANGED)
@@ -154,6 +155,14 @@ def passport_img(country):
         1) #font stroke
 
     cv2.imwrite('output.png', image)
+
+def citation_img(c_type, wrong=0):
+    if c_type == "warning":
+        image = cv2.imread('images/passports/warning-citation.png', cv2.IMREAD_UNCHANGED)
+    elif c_type == "last":
+        image = cv2.imread('images/passports/last-warning-citation.png', cv2.IMREAD_UNCHANGED)
+    else:
+        image = cv2.imread('images/passports/penalty-citation.png', cv2.IMREAD_UNCHANGED)
 
 if __name__ == "__main__":
     data = random_info()
