@@ -4,8 +4,18 @@ import requests
 import random
 import string
 from datetime import date
-
 import string
+
+COUNTRIES_POS = {
+    # code, dob, sex, iss, name, exp
+    "arstotzka": [(10, 310), (130, 205), (130, 223), (130, 241), (35, 180), (130, 259)],
+    "antegria": [(100, 310), (50, 210), (50, 230), (50, 250), (10, 285), (50, 270)],
+    "impor": [(120, 305), (140, 203), (140, 220), (140, 237), (40, 180), (140, 254)],
+    "kolechia": [(120, 310), (140, 220), (140, 235), (140, 250), (40, 205), (140, 275)],
+    "obristan": [(20, 310), (50, 232), (50, 247), (50, 262), (40, 205), (50, 277)],
+    "republia": [(130, 310), (50, 205), (50, 223), (50, 241), (40, 185), (50, 259)],
+    "united-federation": [(125, 310), (135, 220), (135, 240), (135, 255), (40, 205), (135, 275)]
+}
 
 citys = {
     "arstotzka": [
@@ -84,71 +94,73 @@ def random_str(digits=10):
             ans += random.choice(string.ascii_uppercase + string.digits)
     return ans
 
-def passport_img(country, sex=""):
+def passport_img(country, sex="", dob="", name="", exp=""):
 
-    name, dob, sex, exp = random_info()
+    name_1, dob_1, sex_1, exp_1 = random_info()
+
+    if len(name) == 0: name = name_1
+    if len(dob) == 0: dob = dob_1
+    if len(sex) == 0: sex = sex_1
+    if len(exp) == 0: exp = exp_1
 
     image = cv2.imread(f'images/passports/{country}.png', cv2.IMREAD_UNCHANGED)
 
     if country != "cobrastan":
+        # code
         cv2.putText(
             image, #numpy array on which text is written
             random_str(), #text
-            (10, 310), #position at which writing has to start
+            COUNTRIES_POS[country][0], #position at which writing has to start
             cv2.FONT_HERSHEY_SIMPLEX, #font family
             0.6, #font size
             (0, 0, 0, 255), #font color
             1) #font stroke
 
+    # dob
     cv2.putText(
         image, #numpy array on which text is written
         dob, #text
-        (130, 205), #position at which writing has to start
+        COUNTRIES_POS[country][1], #position at which writing has to start
         cv2.FONT_HERSHEY_SIMPLEX, #font family
         0.4, #font size
         (0, 0, 0, 255), #font color
         1) #font stroke
 
+    # sex
     cv2.putText(
         image, #numpy array on which text is written
         sex, #text
-        (130, 223), #position at which writing has to start
+        COUNTRIES_POS[country][2], #position at which writing has to start
         cv2.FONT_HERSHEY_SIMPLEX, #font family
         0.4, #font size
         (0, 0, 0, 255), #font color
         1) #font stroke
 
+    # iss
     cv2.putText(
         image, #numpy array on which text is written
         random.choice(citys[country]), #text
-        (130, 241), #position at which writing has to start
+        COUNTRIES_POS[country][3], #position at which writing has to start
         cv2.FONT_HERSHEY_SIMPLEX, #font family
         0.4, #font size
         (0, 0, 0, 255), #font color
         1) #font stroke
 
+    # name
     cv2.putText(
         image, #numpy array on which text is written
         name, #text
-        (35, 180), #position at which writing has to start
+        COUNTRIES_POS[country][4], #position at which writing has to start
         cv2.FONT_HERSHEY_SIMPLEX, #font family
         0.5, #font size
         (0, 0, 0, 255), #font color
         1) #font stroke
 
-    cv2.putText(
-        image, #numpy array on which text is written
-        name, #text
-        (35, 180), #position at which writing has to start
-        cv2.FONT_HERSHEY_SIMPLEX, #font family
-        0.5, #font size
-        (0, 0, 0, 255), #font color
-        1) #font stroke
-
+    # exp
     cv2.putText(
         image, #numpy array on which text is written
         exp, #text
-        (130, 259), #position at which writing has to start
+        COUNTRIES_POS[country][5], #position at which writing has to start
         cv2.FONT_HERSHEY_SIMPLEX, #font family
         0.5, #font size
         (0, 0, 0, 255), #font color
@@ -166,4 +178,4 @@ def citation_img(c_type, wrong=0):
 
 if __name__ == "__main__":
     data = random_info()
-    passport_img("arstotzka")
+    passport_img("united-federation")
