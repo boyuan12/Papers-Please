@@ -3,7 +3,7 @@ from pygame.locals import *
 import random
 from termcolor import colored
 from time import sleep
-from helpers import passport_img
+from helpers import passport_img, convert_degrees_to_pygame
 
 # pygame.init()
 
@@ -14,28 +14,34 @@ pygame.mixer.init()
 people_count = 0
 
 alphas = "abcdefghijklm"
-characters = []
+characters = {"m": [], "f": [], "s": []}
+special_characters = []
 for i in range(len("abcdefghijklm")):
-    characters.append(pygame.image.load(f"images/characters/{alphas[i]}.png"))
-characters.append(pygame.image.load(f"images/characters/elisa.png"))
-characters.append(pygame.image.load(f"images/characters/ezic.png"))
-characters.append(pygame.image.load(f"images/characters/jorji.png"))
+    if "abcdefghijklm"[i] == "a":
+        characters["f"].append(pygame.transform.scale(pygame.image.load(f"images/characters/{alphas[i]}.png"), (75, 90)))
+    else:
+        characters["m"].append(pygame.transform.scale(pygame.image.load(f"images/characters/{alphas[i]}.png"), (75, 90)))
+characters["s"].append(pygame.image.load(f"images/characters/elisa.png"))
+characters["s"].append(pygame.image.load(f"images/characters/ezic.png"))
+characters["s"].append(pygame.image.load(f"images/characters/jorji.png"))
 
-print(characters)
+# print(characters)
 
 win = pygame.display.set_mode((1000, 700))
 title = pygame.image.load("images/title.png")
 workspace = pygame.image.load("images/workspace.png")
 small_person = pygame.image.load("images/small-person.png")
 arstotaka_passport = pygame.image.load("images/passports/arstotzka.png")
-a = pygame.image.load("images/characters/a.png")
-a = pygame.transform.scale(a, (80,100))
 small_person = pygame.transform.scale(small_person, (25,60))
 pygame.display.set_caption("Papers Please Remake")
 font = pygame.font.SysFont('Tahoma', 60, True, False)
 font_a = pygame.font.Font("fonts/a.ttf", 10)
 game_map = pygame.image.load("images/map.jpeg")
 #text = font.render('Bauhaus 93 | Size: 36 | Colour: White | Background: Blue', True, (255, 255, 255), (0, 0, 255))
+w_citation = pygame.image.load("images/warning-citation.png")
+lw_citation = pygame.image.load("images/last-warning-citation.png")
+p_citation = pygame.image.load("images/penalty-citation.png")
+
 pygame.mixer.music.load("musics/song.mp3")
 pygame.mixer.music.play(-1)
 
@@ -110,6 +116,8 @@ denied_button = Button(900, 500, 50, 50, (255, 0, 0))
 
 correct = None
 char = None
+current_country = None
+a = 0
 
 while play:
     for event in pygame.event.get():
@@ -126,13 +134,16 @@ while play:
             if pass_button.is_click(pos):
                 # do once approve button is clicked
                 if correct != True:
-                    print("you failed")
+                    win.blit(w_citation, (0, 0))
                 avail = True
                 iterator = 0
             elif denied_button.is_click(pos):
                 # do once denied button is clicked
                 if correct != False:
-                    print("you failed")
+                    if a < 30:
+                        print(a)
+                        win.blit(w_citation, (0, 0))
+                        a+=1
                 avail = True
                 iterator = 0
 
@@ -151,9 +162,11 @@ while play:
     for i in range(13):
         win.blit(small_person, (0 + i*20 + int(random_num(1, 2, 1)) / 2, 140 + int(random_num(1, 2, 1)) / 2))
 
+    # pygame.draw.circle(win, (98, 76, 39), (40, 650))
     if not avail:
         if char == None:
-            char = random.choice(characters)
+            gender = random.choice("mf")
+            char = random.choice(characters[gender])
 
         if day_count == 1:
 
@@ -164,25 +177,29 @@ while play:
                         correct = False
                     else:
                         correct = True
-                    passport_img(country)
+                    current_country = country
+                    passport_img(country, sex=gender, exp=True) # True is valid, False otherwise
                     passport = pygame.image.load("output.png")
 
             if people_count == 1:
                 if iterator == 0:
                     correct = True
-                    passport_img("arstotzka")
+                    current_country = "arstotzka"
+                    passport_img(current_country, sex=gender, exp=True)
                     passport = pygame.image.load("output.png")
 
             if people_count == 2:
                 if iterator == 0:
                     correct = False
-                    passport_img("impor")
+                    current_country = "impor"
+                    passport_img(current_country, sex=gender, exp=True)
                     passport = pygame.image.load("output.png")
 
             if people_count == 3:
                 if iterator == 0:
                     correct = False
-                    passport_img("republia")
+                    current_country = "republia"
+                    passport_img(current_country, sex=gender, exp=True)
                     passport = pygame.image.load("output.png")
 
             if people_count == 5:
@@ -192,9 +209,13 @@ while play:
                     win.blit(text, (250, 250))
                     #passport_img("kolechia")
                     #passport = pygame.image.load("output.png")
+
             if people_count != 5:
                 merged = passport.copy()
-                merged.blit(char, (15, 190))
+                if current_country in ["antegria", "obristan", "republia"]:
+                    merged.blit(char, (150, 190))
+                else:
+                    merged.blit(char, (15, 190))
                 win.blit(merged, (400, 250))
                 win.blit(char, (250, 250))
                 iterator += 1

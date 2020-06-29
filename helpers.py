@@ -5,6 +5,7 @@ import random
 import string
 from datetime import date
 import string
+import math 
 
 COUNTRIES_POS = {
     # code, dob, sex, iss, name, exp
@@ -94,14 +95,16 @@ def random_str(digits=10):
             ans += random.choice(string.ascii_uppercase + string.digits)
     return ans
 
-def passport_img(country, sex="", dob="", name="", exp=""):
+def passport_img(country, sex="", dob="", name="", exp=None):
 
     name_1, dob_1, sex_1, exp_1 = random_info()
 
     if len(name) == 0: name = name_1
     if len(dob) == 0: dob = dob_1
     if len(sex) == 0: sex = sex_1
-    if len(exp) == 0: exp = exp_1
+    if exp == None: exp = exp_1
+    elif exp == False: exp = f"{random_num(int(date.today().year)-10, int(date.today().year))}-{random_num(1, 12)}-{random_num(1, 28)}"
+    elif exp == True: exp = exp = f"{random_num(int(date.today().year), int(date.today().year)+10)}-{random_num(1, 12)}-{random_num(1, 28)}"
 
     image = cv2.imread(f'images/passports/{country}.png', cv2.IMREAD_UNCHANGED)
 
@@ -176,6 +179,12 @@ def citation_img(c_type, wrong=0):
     else:
         image = cv2.imread('images/passports/penalty-citation.png', cv2.IMREAD_UNCHANGED)
 
-if __name__ == "__main__":
+def convert_degrees_to_pygame(R, theta):
+    # https://www.youtube.com/watch?v=2W58RNW2gsY
+    x = math.cos(theta) * R
+    y = math.sin(theta) * R
+    return (x-400, 400-y)
+
+"""if __name__ == "__main__":
     data = random_info()
-    passport_img("united-federation")
+    passport_img("united-federation")"""
